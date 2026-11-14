@@ -9,10 +9,10 @@ Local development may use HTTP on localhost. Other HTTP origins are refused when
 
 Add `https://your-domain/api/v1/mcp` as a Streamable HTTP server in your client. The client
 registers as a public OAuth application, opens OpenDiving sign-in, and asks you to approve
-permissions. Read permissions are selected initially. Writing and deleting are separate choices.
-Profile and preferences are optional, separate permissions. Check-in link sharing has its own
-permission. Ordinary content permissions cannot manage credentials, change your sign-in email,
-delete your account or administer the instance.
+permissions. Read permissions other than check-in are selected initially. Writing and deleting are
+separate choices. Profile and preferences are optional, separate permissions. Check-in links can't
+be managed through MCP. Ordinary content permissions cannot manage credentials, change your sign-in
+email, delete your account or administer the instance.
 
 Revoke access in **Settings > MCP > Connected applications**. Revocation takes effect on the
 app's next request. Access tokens last 15 minutes. Refresh tokens rotate on use and expire after
@@ -44,10 +44,10 @@ expire after one hour and each account may hold 50 MiB of temporary files. They 
 the app that created them. Delete unused handles with `DELETE /api/v1/mcp/files/{handle}`.
 
 An import is four tools. `create_logbook_import` takes the file handles and stages the import.
-`read_logbook_import` shows what it would change. `apply_logbook_import` takes only the import's
-uuid, and `discard_logbook_import` drops it instead. Export and attachment tools return a private
-download handle. Fetch its URL with the same MCP bearer token. Download URLs do not contain
-credentials.
+`read_logbook_import` shows what it would change. `apply_logbook_import` takes the import's uuid
+and, optionally, which check-in details and portrait to keep. `discard_logbook_import` drops it
+instead. Export and attachment tools return a private download handle. Fetch its URL with the same
+MCP bearer token. Download URLs do not contain credentials.
 
 The server uses the official Python SDK and supports MCP 2026-07-28 with its 2025-11-25
 compatibility transport. OAuth uses authorization codes with PKCE S256 and resource indicators.
