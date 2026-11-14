@@ -395,8 +395,8 @@ down, or the bucket's own lifecycle rules going the other way.
 
 `MCP_ENABLED=false` keeps delegated AI access off. Set it to `true` to expose the MCP server
 at `/api/v1/mcp`. `FRONTEND_URL` must be HTTPS, except on localhost. Each user approves the
-application's requested permissions in the browser and can revoke a connection in Authentication
-settings.
+application's requested permissions in the browser and can revoke a connection in
+**Settings > MCP > Connected applications**.
 
 `MCP_ALLOWED_HOSTS` adds exact internal proxy Host values to the public hostname already allowed
 from `FRONTEND_URL`. `MCP_ALLOWED_ORIGINS` adds exact browser client origins, separated by commas.

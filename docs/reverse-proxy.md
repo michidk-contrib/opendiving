@@ -102,11 +102,13 @@ the other; two things sending it is how they end up disagreeing about `max-age`.
 
 ## MCP discovery
 
-When `MCP_ENABLED=true`, route `/api/v1/mcp` and its children to the API, along with
+When `MCP_ENABLED=true`, `/api/v1/mcp` and its children,
 `/.well-known/oauth-protected-resource/api/v1/mcp` and
-`/.well-known/oauth-authorization-server/api/v1/mcp/oauth`. The updated bundled Caddy and web
-proxy include these routes. Keep streaming responses unbuffered. See [MCP applications](mcp.md)
-for the public URL and browser origin configuration.
+`/.well-known/oauth-authorization-server/api/v1/mcp/oauth` have to reach the stack. The updated
+web container forwards all of them to the API, so a proxy sending everything to `web:3000`, like
+the snippets below, needs no new location. Forward `Authorization`, `Host` and `Origin` unchanged,
+and pass `WWW-Authenticate` through on a 401. Response buffering does not matter. See
+[MCP applications](mcp.md) for the public URL and browser origin configuration.
 
 ## Snippets
 

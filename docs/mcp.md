@@ -14,19 +14,23 @@ Profile and preferences are optional, separate permissions. Check-in link sharin
 permission. Ordinary content permissions cannot manage credentials, change your sign-in email,
 delete your account or administer the instance.
 
-Revoke access in **Settings > Authentication > Connected applications**. Revocation takes effect
-on the app's next request. Access tokens last 15 minutes. Refresh tokens rotate on use and expire
-after 30 days. Reusing a spent refresh token revokes the connection.
+Revoke access in **Settings > MCP > Connected applications**. Revocation takes effect on the
+app's next request. Access tokens last 15 minutes. Refresh tokens rotate on use and expire after
+30 days. Reusing a spent refresh token revokes the connection.
 
 ## Proxy configuration
 
 The bundled Caddy routes MCP and OAuth discovery directly to the API. With the Next.js proxy,
 use the updated web image, which includes both discovery routes. A custom reverse proxy must
-forward these paths without buffering event streams:
+reach these paths:
 
 - `/api/v1/mcp` and its children
 - `/.well-known/oauth-protected-resource/api/v1/mcp`
 - `/.well-known/oauth-authorization-server/api/v1/mcp/oauth`
+
+It must forward the `Authorization`, `Host` and `Origin` headers unchanged, and pass
+`WWW-Authenticate` through on a 401: that header is how a client finds the discovery document.
+Buffering is harmless. Every tool result is a plain JSON response, not an event stream.
 
 `MCP_ALLOWED_HOSTS` names additional exact Host headers from internal proxy hops. The public
 hostname from `FRONTEND_URL` is always allowed. If a browser-based MCP client sends an Origin,
@@ -39,9 +43,11 @@ Upload a file with `POST /api/v1/mcp/files`, using the connection's bearer token
 expire after one hour and each account may hold 50 MiB of temporary files. They are private to
 the app that created them. Delete unused handles with `DELETE /api/v1/mcp/files/{handle}`.
 
-Import tools retain the preview and apply workflow. Apply takes the same staged files and the
-preview token. Export and attachment tools return a private download handle. Fetch its URL with
-the same MCP bearer token. Download URLs do not contain credentials.
+An import is four tools. `create_logbook_import` takes the file handles and stages the import.
+`read_logbook_import` shows what it would change. `apply_logbook_import` takes only the import's
+uuid, and `discard_logbook_import` drops it instead. Export and attachment tools return a private
+download handle. Fetch its URL with the same MCP bearer token. Download URLs do not contain
+credentials.
 
 The server uses the official Python SDK and supports MCP 2026-07-28 with its 2025-11-25
 compatibility transport. OAuth uses authorization codes with PKCE S256 and resource indicators.
