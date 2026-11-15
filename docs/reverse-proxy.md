@@ -100,6 +100,16 @@ If you would rather your proxy own HSTS — one place for every site on the box,
 way to run a machine — set `WEB_HSTS=off` and send `Strict-Transport-Security` yourself. Pick one or
 the other; two things sending it is how they end up disagreeing about `max-age`.
 
+## MCP
+
+With `MCP_ENABLED=true`, three paths have to reach the stack: `/api/v1/mcp` and everything under
+it, `/.well-known/oauth-protected-resource/api/v1/mcp` and
+`/.well-known/oauth-authorization-server/api/v1/mcp/oauth`. The web container forwards all three
+to the API, so a proxy that sends everything to `web:3000`, like the snippets below, needs nothing
+new. Pass `Authorization`, `Host` and `Origin` through unchanged, and `WWW-Authenticate` back on a
+401: it is how a client finds the OAuth server. A hop that changes `Host` needs that value in
+[`MCP_ALLOWED_HOSTS`](configuration.md#optional-features).
+
 ## Snippets
 
 Adapt the upstream host to however your proxy reaches the stack.

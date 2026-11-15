@@ -147,6 +147,22 @@ your approval again. The app holds a fifteen-minute token that it renews, and an
 days without renewing it has to ask again. A renewal presented twice is taken as a copied token and
 revokes the connection.
 
+### Building an MCP client
+
+The server speaks Streamable HTTP at `/api/v1/mcp`. A client finds the OAuth server through the
+`WWW-Authenticate` header on a 401 and
+`/.well-known/oauth-protected-resource/api/v1/mcp`, and authorizes with an authorization code and
+PKCE `S256`, sending `resource=https://dives.example.com/api/v1/mcp` on both the authorization and
+the token request. It identifies itself with an HTTPS client ID metadata document, or registers
+as a public client.
+
+A tool that takes files takes handles. Upload each file to `POST /api/v1/mcp/files` as a multipart
+`file` part with the connection's token, at most 10 MiB; a handle lasts an hour, belongs to the app
+that made it, and counts against the account's 50 MiB of staged files until it is used or deleted
+with `DELETE /api/v1/mcp/files/{handle}`. `create_logbook_import` stages an import from its
+handles for `read_logbook_import`, then `apply_logbook_import` or `discard_logbook_import`, or with
+`apply=true` imports it at once, as [Importing dives](#importing-dives) describes.
+
 ## Importing dives
 
 A key with `import:write` and `files:write` can bring dives in with one request, applied at once and
